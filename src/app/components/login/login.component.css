@@ -1,0 +1,113 @@
+@import '~animate.css/animate.css';
+
+.b-gg {
+    background-image: url('src/assets/images/c2275ffb-ac93-4b8d-b22b-3302d6ccca94.jpg');
+    background-position: center center;
+    background-size: cover;
+}
+
+.box {
+    box-shadow:
+        0 2.8px 2.2px rgba(243, 71, 243, 0.034),
+        0 6.7px 5.3px rgba(243, 71, 243, 0.034),
+        0 12.5px 10px rgba(243, 71, 243, 0.034),
+        0 22.3px 17.9px rgba(243, 71, 243, 0.034),
+        0 41.8px 33.4px rgba(243, 71, 243, 0.034),
+        0 20px 50px rgba(243, 71, 243, 0.034);
+
+    min-height: 200px;
+    margin: 100px auto;
+    background: white;
+
+}
+
+
+/* From Uiverse.io by ozgeozkaraa01 */
+.group {
+    display: flex;
+    line-height: 30px;
+    align-items: center;
+    position: relative;
+    /* max-width: 200px; */
+}
+
+.input {
+    /* width: 100% !important; */
+    height: 45px;
+    line-height: 30px;
+    padding-left: 3rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    background-color: #f8fafc;
+    color: #0d0c22;
+    transition: .5s ease;
+}
+
+.input::placeholder {
+    color: #94a3b8;
+}
+
+.input:focus,
+input:hover {
+    outline: none;
+    border-color: rgba(243, 71, 243, 0.034);
+    background-color: #fff;
+    box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
+}
+
+.icon {
+    position: absolute;
+    left: 1rem;
+    fill: none;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: black;
+}
+
+.iconn {
+    position: absolute;
+    left: 1rem;
+
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+}
+
+
+
+body {
+    background: #EEF2F7;
+}
+
+@media only screen and (max-width: 600px) {
+    .b-gg {
+        background-image: url('src/assets/images/c2275ffb-ac93-4b8d-b22b-3302d6ccca94.jpg');
+        background-size: cover;
+    }
+}
+
+.form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+dotlottie-player {
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+dotlottie-player[ng-reflect-ng-if="true"] {
+    opacity: 1;
+}
+
+iframe {
+    transition: opacity 1s ease, transform 1s ease;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+.text-orange
+{
+    color: #FFf;
+}

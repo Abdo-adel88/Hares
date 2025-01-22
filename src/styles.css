@@ -1,1 +1,80 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~animate.css/animate.min.css';
+/* PrimeNG theme */
+/* styles.css */
+@import "~primeng/resources/primeng.min.css";
+@import "~primeng/resources/themes/lara-light-blue/theme.css";
+@import "~primeicons/primeicons.css";
+
+
+.bg-main {
+    background-color: #2E073F !important;
+    color: white;
+}
+
+.text.main {
+    color: #a74dd1;
+}
+
+.bg-maiin {
+    background-image: linear-gradient(230deg, #a74dd1, #2E073F 60%) !important;
+    color: white;
+}
+
+body {
+    /* background-color: #d4ceea !important; */
+    /* color: #A594F9; */
+}
+
+.chats {
+    background-color: #0d0412 !important;
+    color: white !important;
+}
+
+/* تخصيص Toast بشكل جذاب */
+.p-toast {
+    top: 1rem !important;
+    /* جعله أقرب إلى أعلى الشاشة */
+    width: 300px !important;
+    /* تحديد العرض */
+    height: 200px !important;
+    /* تحديد العرض */
+    max-width: 80% !important;
+    /* التأكد من ملائمته للشاشة */
+}
+
+.p-toast-message {
+    border-radius: 15px;
+    /* إضافة زوايا مستديرة */
+    /* تخفيف الحشو الداخلي */
+    font-family: 'Arial', sans-serif;
+    /* تحسين الخط */
+    font-size: 1rem;
+    /* حجم الخط */
+    color: #fff;
+    /* لون النص */
+}
+
+.p-toast-message-success {
+    background: linear-gradient(135deg, #a74dd1, #2E073F);
+    /* تدرج لوني للنجاح */
+    /* إضافة ظل لطيف */
+}
+
+.p-toast-message-error {
+    background: linear-gradient(135deg, #a74dd1, #2E073F);
+    /* تدرج لوني للخطأ */
+    /* ظل متدرج */
+}
+
+.p-toast-icon {
+    font-size: 1.5rem;
+    /* تكبير أيقونات التنبيه */
+    color: #fffa;
+    /* لون الأيقونات */
+}
+
+.p-toast-message-text {
+    margin: 0;
+    /* تقليل المسافات الداخلية */
+}

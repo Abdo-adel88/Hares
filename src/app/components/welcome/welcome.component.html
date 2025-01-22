@@ -1,0 +1,22 @@
+<div class="containerr d-flex flex-column align-items-center justify-content-center vh-100 text-center overflow-hidden">
+  <h1 [ngClass]="{'animate__animated animate__zoomInDown': animate}" class="display-4 text-white text-font ">Welcome to Hares Chat</h1>
+
+  <div class="position-relative  d-flex align-items-center ">
+    <!-- الجزء الأول من النص -->
+    <p [ngClass]="{'animate__animated animate__slideInLeft': animate}" class="lead text-white mt-3 p-font text-part text-end">
+      Experience a highly secure chat environment built to protect your privacy. Enjoy real-time messaging with seamless and
+    </p>
+    
+    <!-- الصورة في المنتصف -->
+    <img [ngClass]="{'animate__animated animate__rotateIn': animate}" src="assets/images/hares logo-100.jpg" alt="Project Logo" class="img-fluid mb-4 " style="width: 400px; height: 400px;">
+    
+    <!-- الجزء الثاني من النص -->
+    <p [ngClass]="{'animate__animated animate__slideInRight': animate}" class="lead text-white mt-3 p-font text-part text-start animate__slideInRight">
+      top-notch security that ensures your data is safe. Our platform is designed with advanced encryption, offering you a  safe .
+    </p>
+  </div>
+
+  <button [ngClass]="{'animate__animated animate__backInUp': animate}" class="btn btn-primary btn-lg mt-4" (click)="navigateToLogin()">
+    <i class="fas fa-arrow-right"></i> Get Started
+  </button>
+</div>

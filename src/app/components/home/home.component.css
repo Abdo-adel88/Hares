@@ -1,0 +1,401 @@
+/* From Uiverse.io by LightAndy1 */
+
+.group {
+    display: flex;
+    line-height: 28px;
+    align-items: center;
+    position: relative;
+    max-width: 100%;
+}
+
+.user-info {
+    color: white !important;
+
+}
+
+.input {
+    width: 100%;
+    height: 40px;
+    line-height: 28px;
+    padding: 0 1rem;
+    padding-left: 2.5rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    outline: none;
+    background-color: #f3f3f4;
+    color: #0d0c22;
+    transition: 0.3s ease;
+}
+
+.input::placeholder {
+    color: #A594F9;
+}
+
+.input:focus,
+input:hover {
+    outline: none;
+    border-color: #CDC1FF;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px #CDC1FF;
+}
+
+.icon {
+    position: absolute;
+    fill: #9e9ea7;
+    width: 1rem;
+    height: 1rem;
+}
+.icons {
+    position: absolute;
+    fill: #9e9ea7;
+    width: 2.5rem;
+    height: 1rem;
+}
+
+/* righttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt */
+/* الخلفية */
+.bg-chat {
+    position: relative;
+    background-image: url("../../../assets/images/d36bcceceaa1d390489ec70d93154311.jpg");
+    background-position: center;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.bg-chat::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* تغميق الخلفية قليلاً */
+    z-index: 1;
+}
+
+/* رأس المحادثة */
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background-color: #181818 !important;
+    position: relative;
+    z-index: 2;
+    /* border-bottom: 1px solid #ccc; */
+}
+
+.chat-header img {
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.chat-header span {
+    color: #888;
+    font-size: 12px;
+}
+
+/* جسم المحادثة */
+.chat-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message-received .message,
+.message-sent .message {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    position: relative;
+}
+
+
+.message-received .message {
+    align-self: flex-start;
+    background-color: #fff;
+}
+
+.message-sent .message {
+
+    align-self: flex-end;
+    background-color: white;
+}
+
+
+/* مظهر النص والوقت */
+.message-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+}
+
+.message-meta .heart {
+    color: red;
+}
+
+.message-meta .check {
+    color: #888;
+}
+
+/* إدخال النص */
+.chat-input {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: #f1f1f1;
+    outline: none;
+    margin-right: 10px;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #3b0751;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background-color: #410959;
+}
+
+/* تعديل الرسائل */
+.message {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+    /* جعل النص يلتف */
+    word-break: break-word;
+    /* التعامل مع الكلمات الطويلة */
+    white-space: normal;
+    /* السماح بالتفاف النص */
+    position: relative;
+}
+
+/* إضافة المساحة لتحسين مظهر الرسائل */
+.message span {
+    display: block;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.message-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.message-meta span {
+    margin-left: 5px;
+}
+
+.message {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    position: relative;
+}
+
+.list-bar {
+    top: 10px;
+    right: 0px;
+}
+
+.message .fa-ellipsis-vertical {
+    position: absolute;
+    top: 7px;
+    right: 5px;
+    font-size: 13px;
+}
+
+button.btn-danger {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.me-a {
+    width: 100% !important;
+}
+
+
+
+
+.chat-body {
+    flex-grow: 1;
+    overflow-y: scroll;
+    /* تفعيل السكروب */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* إخفاء شريط التمرير */
+.chat-body::-webkit-scrollbar {
+    display: none;
+    /* لمتصفحات الويب التي تعتمد على WebKit مثل Chrome وSafari */
+}
+
+.chat-body {
+    -ms-overflow-style: none;
+    /* لمتصفحات Internet Explorer و Edge */
+    scrollbar-width: none;
+    /* لمتصفحات Firefox */
+}
+
+
+.chat-input {
+    flex-shrink: 0;
+    /* يجعل الـ input ثابت ولا يشارك في التمرير */
+    background-color: #181818;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.chats {
+    background-color: #181818 !important;
+    color: white !important;
+}
+
+.side-nav {
+    background-color: #222;
+    /* لون الخلفية الداكن */
+    width: 100%;
+    /* ملء المساحة */
+    height: 100vh;
+    /* ملء الارتفاع بالكامل */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.side-nav .btn {
+    color: #fff;
+    /* لون الأيقونة */
+    background: transparent;
+    border: none;
+}
+
+/* إعدادات الأيقونات */
+.side-nav .icon {
+    color: #ccc;
+    /* لون الأيقونات */
+    margin-bottom: 20px;
+    /* المسافة بين الأيقونات */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* شارة الإشعارات */
+.side-nav .badge {
+    background-color: #CDC1FF;
+    color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* النقطة الخضراء */
+.side-nav .dot {
+    background-color: #28a745;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/* الخط الفاصل */
+.side-nav hr {
+    width: 50%;
+    border-color: #444;
+    margin: 20px 0;
+}
+
+/* إعدادات صورة المستخدم */
+.side-nav img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.wf-div {
+    width: 3% !important;
+}
+
+.col-8-last {
+    width: 72%;
+}
+::ng-deep .p-skeleton {
+    background-color: #4b4b4b !important; /* اللون الداكن المطلوب */
+    border-radius: 6px !important; /* الحفاظ على الزوايا المدورة */
+}
+
+::ng-deep .p-skeleton-circle {
+    background-color: #4b4b4b !important; /* اللون الداكن للدائرة */
+    border-radius: 50% !important; /* التأكد من بقاء الشكل دائري */
+}
+.chats-container {
+    height: 100%; /* لجعل العنصر يأخذ كامل الارتفاع */
+    overflow-y: auto; /* تفعيل التمرير العمودي */
+}
+
+/* إخفاء شريط التمرير */
+.chats-container::-webkit-scrollbar {
+    display: none; /* إخفاء شريط التمرير */
+}
+.dropdown-item:focus, .dropdown-item:hover{
+    background-color: #374151 !important;
+    cursor: pointer;
+}

@@ -1,0 +1,88 @@
+<div class="b-gg vh-100 overflow-x-hidden">
+
+    <div [ngClass]="{'animate__animated animate__zoomInDown': animate}" class="container-md  mt-5 pt-5">
+
+
+        <div class="w-100  box bg-maiin rounded-5">
+            <div class=" p-3 row  align-items-center justify-content-center mx-auto my-5 ">
+                <!-- <div class="col-12 d-flex align-items-center justify-content-center"><h1>Chatting App</h1></div> -->
+                <div class="col-12 col-md-6">
+
+                    <!-- عنصر iframe واحد -->
+                    <iframe id="lottiePlayer" [src]="currentSrc "
+                        style="width: 600px; height: 380px; transition: all 1s ease;" [ngStyle]="{
+      'opacity': isFading ? '0' : '1',
+      'transform': isRotating ? 'rotateY(180deg)' : 'rotateY(0deg)'
+    }" allow="autoplay">
+                    </iframe>
+
+
+                </div>
+                <div class="col-12 col-md-6 ">
+                    <form [formGroup]="loginForm" (ngSubmit)="handleLogin(loginForm)">
+                        <h3 class="fw-bold mb-3 text-orange">
+                            Login Now:
+                        </h3>
+                        <div *ngIf="apiErrorMessage" class="alert alert-danger text-center">{{apiErrorMessage}}</div>
+
+                        <div class="group w-100  mt-3">
+                            <svg class="iconn" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"
+                                viewBox="0 0 101 101" id="user">
+                                <path
+                                    d="M50.4 54.5c10.1 0 18.2-8.2 18.2-18.2S60.5 18 50.4 18s-18.2 8.2-18.2 18.2 8.1 18.3 18.2 18.3zm0-31.7c7.4 0 13.4 6 13.4 13.4s-6 13.4-13.4 13.4S37 43.7 37 36.3s6-13.5 13.4-13.5zM18.8 83h63.4c1.3 0 2.4-1.1 2.4-2.4 0-12.6-10.3-22.9-22.9-22.9H39.3c-12.6 0-22.9 10.3-22.9 22.9 0 1.3 1.1 2.4 2.4 2.4zm20.5-20.5h22.4c9.2 0 16.7 6.8 17.9 15.7H21.4c1.2-8.9 8.7-15.7 17.9-15.7z">
+                                </path>
+                            </svg>
+
+                            <input formControlName="email" placeholder="Email" class="form-control input"
+                                id="useremail " type="email">
+
+                        </div>
+
+                        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                            class="text-danger">
+                            <p *ngIf="loginForm.get('email')?.getError('required')" class="my-0">email is required</p>
+                            <p *ngIf="loginForm.get('email')?.getError('email')" class="my-0">Enter valid email</p>
+
+
+                        </div>
+                        <div class="group w-100  mt-3">
+                            <svg stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg" class="icon">
+                                <path
+                                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                                    stroke-linejoin="round" stroke-linecap="round"></path>
+                            </svg>
+                            <input formControlName="password" placeholder="Password" class="form-control w-100 input"
+                                id="userpassword" type="password">
+
+                        </div>
+
+
+                        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                            class="text-danger">
+                            <p *ngIf="loginForm.get('password')?.getError('required')" class="my-0">Password is required
+                            </p>
+                            <p *ngIf="loginForm.get('password')?.getError('pattern')" class="my-0">Enter a complex
+                                password
+                            </p>
+
+
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex  align-items-center text-center justify-content-center">
+                                <button [disabled]="loginForm.invalid " class="btn  my-3 bg-main">Send</button>
+                                <!-- <button [disabled]="loginForm.invalid || isLoading" class="btn bg-main text-light my-3">
+                                    <span *ngIf="!isLoading">Send</span>
+                                    <span *ngIf="isLoading" class="fa-solid fa-spinner fa-spin"></span>
+                                </button> -->
+
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
