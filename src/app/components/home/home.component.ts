@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthServiceService } from 'src/app/service/auth-service.service';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
@@ -8,11 +10,8 @@ import { AuthServiceService } from 'src/app/service/auth-service.service';
 })
 export class HomeComponent implements OnInit {
   isLoading = true;
-  chatList = [
-    { id: '1', name: 'Abdo Adel', msg: '', time: '12.30 pm', numMsg: '66' },
-    { id: '2', name: 'Ahmed Ali', msg: '', time: '12.30 pm', numMsg: '66' },
-    { id: '3', name: 'Sara Mohamed', msg: '', time: '12.30 pm', numMsg: '66' },
-  ];
+  users: any[] = []; // قائمة المستخدمين المسجلين
+  chatList: any[] = []; // قائمة الدردشة التي سيتم تحديثها لاحقًا
 
   currentChatId: string | null = null;
   currentChatName: string | null = null;
@@ -22,19 +21,62 @@ export class HomeComponent implements OnInit {
   isEditing: boolean = false;
   editingMessageIndex: number | null = null;
 
-  constructor(private chatService: AuthServiceService) {}
+  constructor(private _chatService: AuthServiceService, private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
+  
+    this.getUsers(); // جلب المستخدمين عند تحميل الصفحة
+  
+    // إعادة تحميل المستخدمين كل 5 ثوانٍ لضمان تحديث القائمة عند تسجيل مستخدم جديد
+    setInterval(() => {
+      this.getUsers();
+    }, 5000);
+  }
+  
+
+  getUsers(): void {
+    this.http.get<any[]>('http://localhost:3000/users').subscribe(
+      (response) => {
+        this.users = response;
+        
+        // تحديث chatList فقط إذا لم يكن المستخدم مضافًا مسبقًا
+        response.forEach(user => {
+          if (!this.chatList.some(chat => chat.id === user.id.toString())) {
+            this.chatList.push({
+              id: user.id.toString(),
+              name: user.email,
+              msg: '',
+              time: '',
+              numMsg: '0'
+            });
+          }
+        });
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+  
+
+  updateChatList(): void {
+    this.chatList = this.users.map(user => ({
+      id: user.id.toString(), // تحويل الـ id إلى نص لتجنب الأخطاء
+      name: user.email, // استخدام الإيميل كاسم في الدردشة
+      msg: '', // لا توجد رسائل في البداية
+      time: '', // لا يوجد وقت في البداية
+      numMsg: '0' // عدد الرسائل 0 في البداية
+    }));
   }
 
   loadMessages(chatId: string): void {
     this.currentChatId = chatId;
     const chat = this.chatList.find(c => c.id === chatId);
     this.currentChatName = chat ? chat.name : null;
-    this.messages = this.chatService.getMessages(chatId);
+    this.messages = this._chatService.getMessages(chatId);
     this.updateChatListLastMessage(chatId);
   }
 
@@ -53,7 +95,7 @@ export class HomeComponent implements OnInit {
         this.messages.push({ text: this.newMessage, time: currentTime });
       }
 
-      this.chatService.saveMessages(this.currentChatId, this.messages);
+      this._chatService.saveMessages(this.currentChatId, this.messages);
       this.updateChatListLastMessage(this.currentChatId);
       this.newMessage = '';
     }
@@ -67,6 +109,9 @@ export class HomeComponent implements OnInit {
       chat.time = lastMessage.time;
     }
   }
+
+
+
 
   toggleOptions(index: number): void {
     this.selectedMessageIndex = this.selectedMessageIndex === index ? null : index;
@@ -82,11 +127,15 @@ export class HomeComponent implements OnInit {
   deleteMessage(index: number): void {
     if (this.currentChatId) {
       this.messages.splice(index, 1);
-      this.chatService.saveMessages(this.currentChatId, this.messages);
+      this._chatService.saveMessages(this.currentChatId, this.messages);
       this.updateChatListLastMessage(this.currentChatId);
       this.selectedMessageIndex = null;
     }
   }
+
+  logout() {
+    localStorage.removeItem('token');  // حذف التوكن من localStorage
+    sessionStorage.removeItem('token'); // إذا كنت تستخدم sessionStorage أيضًا
+    this.router.navigate(['/login']); // إعادة توجيه المستخدم إلى صفحة الـ Welcome
+  }
 }
-
-

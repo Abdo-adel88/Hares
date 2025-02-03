@@ -15,6 +15,10 @@ import { MessageService } from 'primeng/api';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ChatsComponent } from './components/chats/chats.component';
+import { LoginFormComponent } from './components/login-form/login-form.component';
+
+
+
 
 @NgModule({
   declarations: [
@@ -24,6 +28,7 @@ import { ChatsComponent } from './components/chats/chats.component';
     RegisterComponent,
     WelcomeComponent,
     ChatsComponent,
+    LoginFormComponent,
     
   ],
   imports: [

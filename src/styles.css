@@ -78,3 +78,26 @@ body {
     margin: 0;
     /* تقليل المسافات الداخلية */
 }
+/* تأثير Fade-in */
+.light-speed-in {
+    animation: lightSpeedIn 0.5s ease-out;
+    transform-origin: left center;
+  }
+  
+  @keyframes lightSpeedIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%) skewX(-30deg);
+    }
+    60% {
+      opacity: 1;
+      transform: translateX(0) skewX(10deg);
+    }
+    80% {
+      transform: skewX(-5deg);
+    }
+    to {
+      transform: skewX(0);
+    }
+  }
+  

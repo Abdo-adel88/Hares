@@ -42,10 +42,24 @@
                 </div>
                 <hr />
                 <div class="icon mb-4 btn">
-                    <i class="fas fa-cog fa-lg"></i>
+                    <!--  -->
+                    <div class="btn-group dropend" role="group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu" (click)="logout()">
+                            <li>
+                                <div class="dropdown-items ps-2">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
                 </div>
             </div>
         </div>
+
 
         <!--  left componenttttttttttttttttttttttttt -->
         <div *ngIf="isLoading" class="col-3 m-0 p-0 ">
@@ -88,36 +102,38 @@
                     </svg>
                     <input class="input w-100" type="search" placeholder="Search" />
                 </div>
-                <div class="chats-container ">
+                <div class="chats-container">
                     <div *ngIf="!isLoading" class="chats-container">
-                        <div *ngFor="let chat of chatList" (click)="loadMessages(chat.id)"
-                             class="d-flex align-items-center justify-content-between chat-item mt-4" style="cursor: pointer;">
-                      
-                          <div class="d-flex align-items-center justify-content-between chat-item w-100">
-                            <!-- Profile Icon -->
-                            <div class="d-flex align-items-center">
-                              <img src="assets/images/profile.jpg" width="55px" height="55px" class="rounded-circle" alt="">
-                              <div class="ms-3">
-                                <!-- Business Information and Status -->
-                                <h6 class="mb-0">{{ chat.name }}</h6>
-                                <p class="mb-0" [title]="chat.msg .length > 12 ? chat.msg  : ''">
-                                    {{ chat.msg .length > 12 ? (chat.msg  | slice:0:12) + '...' : chat.msg  }}
-                                </p>
-                              </div>
-                            </div>
-                      
-                            <!-- Time and Badge -->
-                            <div class="text-end">
-                              <p class="text.main mb-0">{{ chat.time }}</p> <!-- تحديث وقت الرسالة الأخيرة -->
-                              <span class="badge bg-main">{{ chat.numMsg }}</span>
+                      <div *ngFor="let chat of chatList" (click)="loadMessages(chat.id)"
+                           class="d-flex align-items-center justify-content-between chat-item mt-4" style="cursor: pointer;">
+                  
+                        <div class="d-flex align-items-center justify-content-between chat-item w-100">
+                          <!-- أيقونة الملف الشخصي -->
+                          <div class="d-flex align-items-center">
+                            <img src="assets/images/profile.jpg" width="55px" height="55px" class="rounded-circle" alt="User Profile">
+                            <div class="ms-3">
+                              <!-- اسم المستخدم وعنوان البريد الإلكتروني -->
+                              <h6 class="mb-0">{{ chat.name }}</h6>
+                              <p class="mb-0" [title]="chat.msg.length > 12 ? chat.msg : ''">
+                                {{ chat.msg.length > 12 ? (chat.msg | slice:0:12) + '...' : chat.msg }}
+                              </p>
                             </div>
                           </div>
-                      
+                  
+                          <!-- وقت آخر رسالة وعدد الرسائل الجديدة -->
+                          <div class="text-end">
+                            <p class="text.main mb-0">{{ chat.time }}</p> 
+                            <span class="badge bg-main">{{ chat.numMsg }}</span>
+                          </div>
                         </div>
+                  
                       </div>
-                </div>
+                    </div>
+                  </div>
+                  
             </div>
         </div>
+
 
         <!-- right componentttttttttttttttttttttttttt -->
         <div *ngIf="isLoading" class="chat-window col-8-last  bg-chat m-0 p-0 text-start">
@@ -184,16 +200,14 @@
                         </div>
 
                         <!-- القائمة المنسدلة -->
-                        <div *ngIf="selectedMessageIndex === i" class="dropdown-menu show position-absolute"
+                        <div *ngIf="selectedMessageIndex === i" class="dropdown-menu-1 p-2 show position-absolute"
                             style="top: 100%; right: 0; min-width: 150px; background-color:#0d0c22; color: #fff !important;">
-                            <a class="dropdown-item text-white" (click)="editMessage(i)">Edit</a>
-                            <a class="dropdown-item text-white" (click)="deleteMessage(i)">Delete</a>
+                            <a class="dropdown-item text-white p-1" (click)="editMessage(i)">Edit</a>
+                            <a class="dropdown-item text-white p-1" (click)="deleteMessage(i)">Delete</a>
 
                         </div>
                     </div>
                 </div>
-
-
             </div>
             <div class="chat-input">
                 <input type="text" [(ngModel)]="newMessage" placeholder="Message" (keydown.enter)="sendMessage()">
