@@ -16,6 +16,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ChatsComponent } from './components/chats/chats.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
+import { DefaultViewComponent } from './components/default-view/default-view.component';
 
 
 
@@ -29,6 +30,7 @@ import { LoginFormComponent } from './components/login-form/login-form.component
     WelcomeComponent,
     ChatsComponent,
     LoginFormComponent,
+    DefaultViewComponent,
     
   ],
   imports: [

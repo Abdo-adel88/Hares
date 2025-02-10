@@ -1,120 +1,200 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthServiceService } from 'src/app/service/auth-service.service';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   isLoading = true;
   users: any[] = []; // قائمة المستخدمين المسجلين
-  chatList: any[] = []; // قائمة الدردشة التي سيتم تحديثها لاحقًا
-
+  chatList: any[] = []; // قائمة الدردشة
   currentChatId: string | null = null;
   currentChatName: string | null = null;
-  messages: { text: string; time: string }[] = [];
+  messages: {
+    senderId: string;
+    timestamp: number;
+    message: any;
+    text: string;
+    time: string;
+    
+  }[] = [];
   newMessage: string = '';
   selectedMessageIndex: number | null = null;
   isEditing: boolean = false;
   editingMessageIndex: number | null = null;
+  loggedInUserId: string = '';
+  private messageSubscription: Subscription | null = null;
 
-  constructor(private _chatService: AuthServiceService, private router: Router, private http: HttpClient) {}
+  constructor(
+    private _chatService: AuthServiceService,
+    private router: Router,
+    
+  ) {}
 
   ngOnInit(): void {
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
   
-    this.getUsers(); // جلب المستخدمين عند تحميل الصفحة
+    this.getUsers();
   
-    // إعادة تحميل المستخدمين كل 5 ثوانٍ لضمان تحديث القائمة عند تسجيل مستخدم جديد
-    setInterval(() => {
-      this.getUsers();
-    }, 5000);
+    // الاستماع للرسائل الجديدة
+    this.messageSubscription = this._chatService
+      .listenForMessages()
+      .subscribe((message) => {
+        if (message.recipient === this.currentChatId) {
+          // تحقق من عدم إضافة الرسالة نفسها مرة أخرى
+          if (!this.messages.some((msg) => msg.timestamp === message.timestamp)) {
+            this.messages.push(message);
+            this.updateLocalStorage();
+          }
+        }
+      });
+  
+    this.loggedInUserId = this._chatService.getLoggedInUserId(); // تأكد من أن هذه الدالة تُرجع البريد الإلكتروني
+    console.log("Logged in user ID:", this.loggedInUserId); // تحقق من القيمة
   }
   
+
+  ngOnDestroy(): void {
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
+  }
 
   getUsers(): void {
-    this.http.get<any[]>('http://localhost:3000/users').subscribe(
-      (response) => {
-        this.users = response;
-        
-        // تحديث chatList فقط إذا لم يكن المستخدم مضافًا مسبقًا
-        response.forEach(user => {
-          if (!this.chatList.some(chat => chat.id === user.id.toString())) {
-            this.chatList.push({
-              id: user.id.toString(),
-              name: user.email,
-              msg: '',
-              time: '',
-              numMsg: '0'
-            });
-          }
-        });
-      },
-      (error) => {
-        console.error('Error fetching users:', error);
-      }
-    );
+    this._chatService.getUsers().subscribe((users) => {
+      console.log("Users from server:", users);
+  
+      this.loggedInUserId = this._chatService.getLoggedInUserId(); // ✅ استرجاع البريد الإلكتروني
+      console.log("Logged in user ID:", this.loggedInUserId);
+  
+      // ✅ استبعاد المستخدم الحالي من قائمة المستخدمين
+      this.users = users.filter(user => user.email !== this.loggedInUserId);
+      console.log("Filtered users:", this.users);
+  
+      let localStorageData = JSON.parse(localStorage.getItem('chats') || '{}');
+  
+      this.chatList = this.users.map((user) => {
+        let userMessages = localStorageData[user.id] || [];
+  
+        let lastMessage = userMessages.length > 0
+          ? userMessages.reduce((latest: any, msg: any) => 
+              new Date(msg.timestamp).getTime() > new Date(latest.timestamp).getTime() ? msg : latest
+            , userMessages[0])
+          : null;
+  
+        return {
+          id: user.id.toString(),
+          name: user.email,
+          msg: lastMessage ? String(lastMessage.text) : 'لا توجد رسائل',
+          time: lastMessage ? (lastMessage.time || new Date(lastMessage.timestamp).toLocaleTimeString()) : '',
+          numMsg: userMessages.length.toString()
+        };
+      });
+  
+      console.log("🔹 Updated Chat List:", this.chatList);
+    });
   }
   
-
-  updateChatList(): void {
-    this.chatList = this.users.map(user => ({
-      id: user.id.toString(), // تحويل الـ id إلى نص لتجنب الأخطاء
-      name: user.email, // استخدام الإيميل كاسم في الدردشة
-      msg: '', // لا توجد رسائل في البداية
-      time: '', // لا يوجد وقت في البداية
-      numMsg: '0' // عدد الرسائل 0 في البداية
-    }));
-  }
+  
+  
+  
+  
 
   loadMessages(chatId: string): void {
     this.currentChatId = chatId;
-    const chat = this.chatList.find(c => c.id === chatId);
+    const chat = this.chatList.find((c) => c.id === chatId);
     this.currentChatName = chat ? chat.name : null;
-    this.messages = this._chatService.getMessages(chatId);
-    this.updateChatListLastMessage(chatId);
+  
+    // تحميل الرسائل من localStorage
+    const storedMessages = JSON.parse(localStorage.getItem('chats') || '{}');
+    this.messages = storedMessages[chatId] ? [...storedMessages[chatId]] : [];
+  
+    // ✅ ضمان وجود senderId في كل رسالة
+    this.messages = this.messages.map(msg => ({
+      ...msg,
+      senderId: msg.senderId || this.loggedInUserId // تأكد أن كل رسالة تحتوي على senderId
+    }));
+  
+    console.log("Loaded messages from localStorage:", this.messages);
+  
+    // جلب الرسائل من السيرفر مع تجنب التكرار
+    this._chatService.getMessages(chatId).subscribe((serverMessages) => {
+      const localMessageSet = new Set(this.messages.map(msg => JSON.stringify(msg)));
+      const filteredServerMessages = serverMessages.filter(msg => 
+        msg.hasOwnProperty('text') && msg.hasOwnProperty('time') && !localMessageSet.has(JSON.stringify(msg))
+      );
+  
+      // ✅ ضمان أن كل رسالة من السيرفر تحتوي على senderId
+      filteredServerMessages.forEach(msg => {
+        if (!msg.hasOwnProperty('senderId')) {
+          msg.senderId = 'unknown'; // أو أي قيمة افتراضية
+        }
+      });
+  
+      this.messages = [...this.messages, ...filteredServerMessages];
+  
+      this.updateLocalStorage();
+    });
   }
+  
+  
+  
+  
 
   sendMessage(): void {
     if (this.newMessage.trim() !== '' && this.currentChatId) {
       const currentDate = new Date();
-      currentDate.setHours(currentDate.getHours() + 2);
-      const currentTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-
-      if (this.isEditing && this.editingMessageIndex !== null) {
-        this.messages[this.editingMessageIndex].text = this.newMessage;
-        this.messages[this.editingMessageIndex].time = currentTime;
-        this.isEditing = false;
-        this.editingMessageIndex = null;
-      } else {
-        this.messages.push({ text: this.newMessage, time: currentTime });
+      currentDate.setHours(currentDate.getHours());
+      const currentTime = currentDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+  
+      const newMsg = {
+        senderId: this.loggedInUserId, // ✅ أضف معرف المرسل
+        timestamp: Date.now(),
+        message: this.newMessage,
+        text: this.newMessage,
+        time: currentTime,
+      };
+  
+      if (newMsg.text.trim() !== '') {
+        this.messages.push(newMsg);
+        this.updateLocalStorage(); // ✅ تحديث التخزين المحلي
+  
+        // ✅ تحديث قائمة المحادثات فورًا بدلاً من انتظار تحديث الصفحة
+        const chatIndex = this.chatList.findIndex(chat => chat.id === this.currentChatId);
+        if (chatIndex !== -1) {
+          this.chatList[chatIndex].msg = newMsg.text;
+          this.chatList[chatIndex].time = newMsg.time;
+          this.chatList[chatIndex].numMsg = (parseInt(this.chatList[chatIndex].numMsg, 10) + 1).toString();
+        }
+  
+        console.log("🔹 Updated Chat List after sending message:", this.chatList);
+  
+        this._chatService.sendMessage(
+          this.currentChatId,
+          this.currentChatId,
+          this.newMessage
+        );
       }
-
-      this._chatService.saveMessages(this.currentChatId, this.messages);
-      this.updateChatListLastMessage(this.currentChatId);
-      this.newMessage = '';
+  
+      this.newMessage = ''; // مسح حقل الإدخال بعد الإرسال
     }
   }
-
-  updateChatListLastMessage(chatId: string): void {
-    const chat = this.chatList.find(c => c.id === chatId);
-    if (chat && this.messages.length > 0) {
-      const lastMessage = this.messages[this.messages.length - 1];
-      chat.msg = lastMessage.text;
-      chat.time = lastMessage.time;
-    }
-  }
-
-
-
+  
+  
 
   toggleOptions(index: number): void {
-    this.selectedMessageIndex = this.selectedMessageIndex === index ? null : index;
+    this.selectedMessageIndex =
+      this.selectedMessageIndex === index ? null : index;
   }
 
   editMessage(index: number): void {
@@ -126,16 +206,53 @@ export class HomeComponent implements OnInit {
 
   deleteMessage(index: number): void {
     if (this.currentChatId) {
+      const deletedMessage = this.messages[index];
+  
+      console.log("Deleting message:", deletedMessage); // 👈 تحقق من البيانات المرسلة
+  
       this.messages.splice(index, 1);
-      this._chatService.saveMessages(this.currentChatId, this.messages);
-      this.updateChatListLastMessage(this.currentChatId);
-      this.selectedMessageIndex = null;
+      this.updateLocalStorage();
+  
+      this._chatService.deleteMessage(deletedMessage).subscribe(() => {
+        console.log("Message deleted from server.");
+      }, error => {
+        console.error("Failed to delete message from server:", error);
+      });
     }
   }
+  
+  
 
-  logout() {
-    localStorage.removeItem('token');  // حذف التوكن من localStorage
-    sessionStorage.removeItem('token'); // إذا كنت تستخدم sessionStorage أيضًا
-    this.router.navigate(['/login']); // إعادة توجيه المستخدم إلى صفحة الـ Welcome
+ 
+  clearCache(): void {
+    localStorage.removeItem('chats');
+    localStorage.removeItem('chatMessages');
+    console.log("Cache Cleared");
+  }
+  updateLocalStorage(): void {
+    if (this.currentChatId) {
+      let allChats = JSON.parse(localStorage.getItem('chats') || '{}');
+  
+      if (this.messages.length > 0) {
+        allChats[this.currentChatId] = [
+          ...this.messages.filter(
+            (msg, index, self) =>
+              index === self.findIndex((m) => m.timestamp === msg.timestamp)
+          ),
+        ]; // إزالة الرسائل المكررة بناءً على `timestamp`
+      } else {
+        delete allChats[this.currentChatId];
+      }
+  
+      localStorage.setItem('chats', JSON.stringify(allChats));
+  
+      console.log("Updated Local Storage:", JSON.parse(localStorage.getItem('chats') || '{}'));
+    }
+  }
+  
+  
+
+  logout(): void {
+    this._chatService.logout();
   }
 }

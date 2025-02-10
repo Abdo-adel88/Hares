@@ -112,24 +112,24 @@ input:hover {
   gap: 10px;
 }
 
-.message-received .message,
+/* .message-received .message,
 .message-sent .message {
   background-color: white;
   padding: 10px;
   border-radius: 10px;
   max-width: 60%;
   position: relative;
-}
+} */
 
-.message-received .message {
+/* .message-received .message {
   align-self: flex-start;
   background-color: #fff;
-}
+} */
 
-.message-sent .message {
+/* .message-sent .message {
   align-self: flex-end;
   background-color: white;
-}
+} */
 
 /* مظهر النص والوقت */
 .message-meta {
@@ -180,19 +180,6 @@ input:hover {
 }
 
 /* تعديل الرسائل */
-.message {
-  background-color: white;
-  padding: 10px;
-  border-radius: 10px;
-  max-width: 60%;
-  word-wrap: break-word;
-  /* جعل النص يلتف */
-  word-break: break-word;
-  /* التعامل مع الكلمات الطويلة */
-  white-space: normal;
-  /* السماح بالتفاف النص */
-  position: relative;
-}
 
 /* إضافة المساحة لتحسين مظهر الرسائل */
 .message span {
@@ -217,7 +204,7 @@ input:hover {
   background-color: white;
   padding: 10px;
   border-radius: 10px;
-  max-width: 60%;
+ 
   word-wrap: break-word;
   word-break: break-word;
   white-space: normal;
@@ -396,6 +383,9 @@ button.btn-danger {
   background-color: rgb(255, 65, 65) !important;
   color: white;
 }
+.dropdown-menu-1 {
+ z-index: 555555555555555555555555;
+}
 /* From Uiverse.io by vinodjangid07 */
 .Btn {
   display: flex;
@@ -462,4 +452,69 @@ button.btn-danger {
 /* button click effect*/
 .Btn:active {
   transform: translate(2px, 2px);
+}
+.message-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+}
+
+.message {
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+ 
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  position: relative;
+}
+
+
+.message-sent {
+  align-self: flex-end;
+   max-width: 50%;
+  
+  border-bottom-right-radius: 4px;
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+}
+
+.message-received {
+  align-self: flex-start;
+   max-width: 50%;
+  border-bottom-left-radius: 4px;
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+}
+
+/* أيقونات التحقق */
+.check {
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.check i {
+  color: #4fc3f7;
+}
+
+.message-meta {
+  font-size: 12px;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* أنيميشن بسيطة */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
