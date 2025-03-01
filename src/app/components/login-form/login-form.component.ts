@@ -107,4 +107,18 @@ export class LoginFormComponent {
   toggleForm() {
     this.isRegistering = !this.isRegistering;
   }
+  login() {
+    this.isLoading = true;
+    this._AuthService.login(this.loginForm.value).subscribe(
+      (response) => {
+        localStorage.setItem('userEmail', response.email);
+        this._router.navigate(['/home']);
+      },
+      (error) => {
+        this.isLoading = false;
+        this.apiErrorMessage = error.error.message;
+      }
+    );
+  }
+  
 }

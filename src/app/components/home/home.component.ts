@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   currentChatId: string | null = null;
   currentChatName: string | null = null;
   messages: {
+    
     senderId: string;
     timestamp: number;
     message: any;
@@ -28,6 +29,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   editingMessageIndex: number | null = null;
   loggedInUserId: string = '';
   private messageSubscription: Subscription | null = null;
+serverMessages: any;
 
   constructor(
     private _chatService: AuthServiceService,
@@ -36,10 +38,21 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+   
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
-  
+    this._chatService.listenForMessages().subscribe((newMessage) => {
+      console.log("📥 تم استقبال رسالة جديدة:", newMessage);
+    
+      if (newMessage.recipient === this.loggedInUserId) {
+        this.messages.push(newMessage);
+        this.updateLocalStorage();
+      }
+    });
+    
+    
+    this.loggedInUserId = localStorage.getItem('userEmail') || '';
     this.getUsers();
   
     // الاستماع للرسائل الجديدة
@@ -59,6 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     console.log("Logged in user ID:", this.loggedInUserId); // تحقق من القيمة
   }
   
+  
 
   ngOnDestroy(): void {
     if (this.messageSubscription) {
@@ -72,9 +86,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   
       this.loggedInUserId = this._chatService.getLoggedInUserId(); // ✅ استرجاع البريد الإلكتروني
       console.log("Logged in user ID:", this.loggedInUserId);
-  
+  //!== this.loggedInUserId
       // ✅ استبعاد المستخدم الحالي من قائمة المستخدمين
-      this.users = users.filter(user => user.email !== this.loggedInUserId);
+      this.users = users.filter(user => user.email );
       console.log("Filtered users:", this.users);
   
       let localStorageData = JSON.parse(localStorage.getItem('chats') || '{}');
@@ -101,7 +115,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
   
-  
+ 
   
   
   
@@ -113,29 +127,26 @@ export class HomeComponent implements OnInit, OnDestroy {
   
     // تحميل الرسائل من localStorage
     const storedMessages = JSON.parse(localStorage.getItem('chats') || '{}');
-    this.messages = storedMessages[chatId] ? [...storedMessages[chatId]] : [];
   
-    // ✅ ضمان وجود senderId في كل رسالة
-    this.messages = this.messages.map(msg => ({
-      ...msg,
-      senderId: msg.senderId || this.loggedInUserId // تأكد أن كل رسالة تحتوي على senderId
-    }));
+    // ✅ فلترة الرسائل بحيث تكون خاصة بالمستخدم فقط
+    this.messages = storedMessages[chatId]
+      ? storedMessages[chatId].filter(
+          (msg: any) =>
+            msg.senderId === this.loggedInUserId || msg.recipientId === this.loggedInUserId
+        )
+      : [];
   
-    console.log("Loaded messages from localStorage:", this.messages);
+    console.log("✅ Loaded messages for:", this.loggedInUserId, this.messages);
   
-    // جلب الرسائل من السيرفر مع تجنب التكرار
+    // جلب الرسائل من السيرفر
     this._chatService.getMessages(chatId).subscribe((serverMessages) => {
       const localMessageSet = new Set(this.messages.map(msg => JSON.stringify(msg)));
-      const filteredServerMessages = serverMessages.filter(msg => 
-        msg.hasOwnProperty('text') && msg.hasOwnProperty('time') && !localMessageSet.has(JSON.stringify(msg))
-      );
   
-      // ✅ ضمان أن كل رسالة من السيرفر تحتوي على senderId
-      filteredServerMessages.forEach(msg => {
-        if (!msg.hasOwnProperty('senderId')) {
-          msg.senderId = 'unknown'; // أو أي قيمة افتراضية
-        }
-      });
+      const filteredServerMessages = serverMessages.filter(
+        (msg: any) =>
+          !localMessageSet.has(JSON.stringify(msg)) && 
+          (msg.senderId === this.loggedInUserId || msg.recipientId === this.loggedInUserId) // ✅ الفلترة هنا أيضًا
+      );
   
       this.messages = [...this.messages, ...filteredServerMessages];
   
@@ -146,11 +157,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   
   
   
+  
 
   sendMessage(): void {
     if (this.newMessage.trim() !== '' && this.currentChatId) {
       const currentDate = new Date();
-      currentDate.setHours(currentDate.getHours());
       const currentTime = currentDate.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
@@ -158,37 +169,39 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   
       const newMsg = {
-        senderId: this.loggedInUserId, // ✅ أضف معرف المرسل
+        senderId: this.loggedInUserId, // ✅ البريد الإلكتروني للمرسل
+        recipientId: this.chatList.find(chat => chat.id === this.currentChatId)?.name || this.currentChatId,
+        // ✅ البريد الإلكتروني للمستلم
         timestamp: Date.now(),
         message: this.newMessage,
         text: this.newMessage,
         time: currentTime,
       };
   
-      if (newMsg.text.trim() !== '') {
-        this.messages.push(newMsg);
-        this.updateLocalStorage(); // ✅ تحديث التخزين المحلي
+      this.messages.push(newMsg);
+      this.updateLocalStorage(); // ✅ تحديث التخزين المحلي
   
-        // ✅ تحديث قائمة المحادثات فورًا بدلاً من انتظار تحديث الصفحة
-        const chatIndex = this.chatList.findIndex(chat => chat.id === this.currentChatId);
-        if (chatIndex !== -1) {
-          this.chatList[chatIndex].msg = newMsg.text;
-          this.chatList[chatIndex].time = newMsg.time;
-          this.chatList[chatIndex].numMsg = (parseInt(this.chatList[chatIndex].numMsg, 10) + 1).toString();
-        }
-  
-        console.log("🔹 Updated Chat List after sending message:", this.chatList);
-  
-        this._chatService.sendMessage(
-          this.currentChatId,
-          this.currentChatId,
-          this.newMessage
-        );
+      // ✅ تحديث قائمة المحادثات فورًا
+      const chatIndex = this.chatList.findIndex(chat => chat.id === this.currentChatId);
+      if (chatIndex !== -1) {
+        this.chatList[chatIndex].msg = newMsg.text;
+        this.chatList[chatIndex].time = newMsg.time;
+        this.chatList[chatIndex].numMsg = (parseInt(this.chatList[chatIndex].numMsg, 10) + 1).toString();
       }
+  
+      console.log("🔹 Updated Chat List after sending message:", this.chatList);
+  
+      // ✅ إرسال الرسالة إلى السيرفر بالمعلومات الصحيحة
+      this._chatService.sendMessage(
+        this.loggedInUserId, // ✅ البريد الإلكتروني للمرسل
+        this.currentChatId,  // ✅ البريد الإلكتروني للمستلم
+        this.newMessage
+      );
   
       this.newMessage = ''; // مسح حقل الإدخال بعد الإرسال
     }
   }
+  
   
   
 
@@ -253,6 +266,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   
 
   logout(): void {
-    this._chatService.logout();
-  }
+  console.log("🔹 Logging out. Clearing local storage.");
+  localStorage.removeItem('chats');
+  localStorage.removeItem('chatMessages');
+  this._chatService.logout();
+}
+
 }

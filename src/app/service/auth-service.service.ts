@@ -27,12 +27,19 @@ login(credentials: any): Observable<any> {
     tap((response: any) => {
       if (response.token) {
         localStorage.setItem('token', response.token);
-        this.currentUser = response.user; // تعيين المستخدم الحالي
+        localStorage.setItem('userEmail', response.email); // ✅ حفظ البريد الإلكتروني
+        this.currentUser = response; // ✅ تخزين بيانات المستخدم
         this.isLoggedInSubject.next(true);
       }
     })
   );
 }
+
+// دالة لإرجاع البريد الإلكتروني المخزن
+getLoggedInUserId(): string {
+  return localStorage.getItem('userEmail') || ''; // ✅ استرجاع البريد الإلكتروني المخزن
+}
+
   // تسجيل الخروج
   logout(): void {
     localStorage.removeItem('token'); // إزالة التوكن عند تسجيل الخروج
@@ -65,8 +72,13 @@ login(credentials: any): Observable<any> {
 
   // إرسال رسالة
   sendMessage(sender: string, recipient: string, message: string): void {
-    this.socket.emit('send-message', { sender, recipient, message });
-  }
+    const timestamp = Date.now();
+    this.socket.emit('send-message', { sender, recipient, message, timestamp });
+}
+
+
+
+  
 
   // استقبال رسائل جديدة
   listenForMessages(): Observable<any> {
@@ -76,12 +88,14 @@ login(credentials: any): Observable<any> {
       });
     });
   }
-
+ 
+  
   // جلب جميع المستخدمين
   getUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/users`);
   }
-
+ 
+  
   // جلب الرسائل بين مستخدمين معينين
   getMessages(email: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/messages/${email}`);
@@ -92,10 +106,7 @@ login(credentials: any): Observable<any> {
   }
 
 // في AuthServiceService
-getLoggedInUserId(): string {
-  console.log("Current user:", this.currentUser); // تحقق مما إذا كان `currentUser` يحتوي على بيانات المستخدم
-  return this.currentUser ? this.currentUser.email : '';
-}
+
 
   
 }

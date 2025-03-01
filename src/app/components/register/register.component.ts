@@ -24,7 +24,9 @@ export class RegisterComponent {
   // معالجة تسجيل المستخدم
 // نموذج التسجيل
 registerForm: FormGroup = new FormGroup({
+
   email: new FormControl(null, [Validators.required, Validators.email]), // استخدام الإيميل
+  username: new FormControl(null, [Validators.required]), // استخدام الإيميل
   password: new FormControl(null, [
       Validators.required,
       Validators.minLength(6),

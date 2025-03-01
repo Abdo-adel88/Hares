@@ -74,4 +74,5 @@ export class LoginComponent {
   toggleForm() {
     this.isRegistering = !this.isRegistering;
   }
+  
 }
